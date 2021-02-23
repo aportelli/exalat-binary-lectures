@@ -1,0 +1,91 @@
+$ lldb functions                   
+(lldb) target create "functions"
+Current executable set to '/mnt/hgfs/binary-hack/lectures/2-elf/functions' (x86_64).
+(lldb) b 9 # breakpoint when function1 returns, we should be 2 calls deep from main
+Breakpoint 1: where = functions`function1 + 19 at functions.c:9:10, address = 0x0000000000401143
+(lldb) r
+Process 73788 launched: '/mnt/hgfs/binary-hack/lectures/2-elf/functions' (x86_64)
+Process 73788 stopped
+* thread #1, name = 'functions', stop reason = breakpoint 1.1
+    frame #0: 0x0000000000401143 functions`function1(a=2, b=2) at functions.c:9:10
+   6    {
+   7      int c = a + b;
+   8   
+-> 9      return c;
+   10   }
+   11  
+   12   double function2(double a)
+(lldb) d
+functions`function1:
+    0x401130 <+0>:  push   rbp
+    0x401131 <+1>:  mov    rbp, rsp
+    0x401134 <+4>:  mov    dword ptr [rbp - 0x4], edi
+    0x401137 <+7>:  mov    dword ptr [rbp - 0x8], esi
+    0x40113a <+10>: mov    eax, dword ptr [rbp - 0x4]
+    0x40113d <+13>: add    eax, dword ptr [rbp - 0x8]
+    0x401140 <+16>: mov    dword ptr [rbp - 0xc], eax
+->  0x401143 <+19>: mov    eax, dword ptr [rbp - 0xc]
+    0x401146 <+22>: pop    rbp
+    0x401147 <+23>: ret
+(lldb) bt
+* thread #1, name = 'functions', stop reason = breakpoint 1.1
+  * frame #0: 0x0000000000401143 functions`function1(a=2, b=2) at functions.c:9:10
+    frame #1: 0x000000000040116c functions`function2(a=2) at functions.c:14:19
+    frame #2: 0x00000000004011ac functions`main at functions.c:21:18
+    frame #3: 0x00007ffff7de70b3 libc.so.6`__libc_start_main + 243
+    frame #4: 0x000000000040106e functions`_start + 46
+(lldb) re r rsp rbp # check rsp and rbp, stack has size 1 (rsp == rbp)
+     rsp = 0x00007fffffffdeb0
+     rbp = 0x00007fffffffdeb0
+(lldb) x/2xg $rsp # read 2 quad words from the stack
+                  # should be the previous frame saved pointer and return address
+0x7fffffffdeb0: 0x00007fffffffded0 0x000000000040116c
+(lldb) d -n function2 # check the second one is the return address
+functions`function2:
+    0x401150 <+0>:  push   rbp
+    0x401151 <+1>:  mov    rbp, rsp
+    0x401154 <+4>:  sub    rsp, 0x10
+    0x401158 <+8>:  movsd  qword ptr [rbp - 0x8], xmm0
+    0x40115d <+13>: cvttsd2si edi, qword ptr [rbp - 0x8]
+    0x401162 <+18>: cvttsd2si esi, qword ptr [rbp - 0x8]
+    0x401167 <+23>: call   0x401130                  ; function1 at functions.c:6
+    0x40116c <+28>: movsd  xmm0, qword ptr [rip + 0xe94] ; xmm0 = mem[0],zero 
+    0x401174 <+36>: cvtsi2sd xmm1, eax
+    0x401178 <+40>: mulsd  xmm0, xmm1
+    0x40117c <+44>: movsd  qword ptr [rbp - 0x10], xmm0
+    0x401181 <+49>: movsd  xmm0, qword ptr [rbp - 0x10] ; xmm0 = mem[0],zero 
+    0x401186 <+54>: add    rsp, 0x10
+    0x40118a <+58>: pop    rbp
+    0x40118b <+59>: ret    
+
+(lldb) p/a 0x000000000040116c # you can get the position with the 'a' type too
+(int) $1 = 0x0040116c functions`function2 + 28 at functions.c:14:19
+(lldb) x/4xg `$rsp + 0x10` # now let's look at the stack frame under it
+0x7fffffffdec0: 0x00007ffff7fb0fc8 0x4000000000000000 # 16B of stack space
+0x7fffffffded0: 0x00007fffffffdef0 0x00000000004011ac # saved pointer and return address of function1
+(lldb) x/f `$rsp + 0x10` # first function1 stack element
+0x7fffffffdec0: 6.953349160608217E-310 # garbage, temporary
+(lldb) x/f `$rsp + 0x18` # second function1 stack element
+0x7fffffffdec8: 2 # this is the function argument!
+(lldb) p/a 0x00000000004011ac # the return address is the call from main
+(int) $23 = 0x004011ac functions`main + 28 at functions.c:21:3
+(lldb) b 16 # let's go to the return statement of function2
+Breakpoint 2: where = functions`function2 + 49 at functions.c:16:10, address = 0x0000000000401181
+(lldb) c
+Process 73788 resuming
+Process 73788 stopped
+* thread #1, name = 'functions', stop reason = breakpoint 2.1
+    frame #0: 0x0000000000401181 functions`function2(a=2) at functions.c:16:10
+   13   {
+   14     double b = 3.14*function1(a, a);
+   15  
+-> 16     return b;
+   17   }
+   18  
+   19   int main(void)
+(lldb) re r rsp rbp # the stack pointers are now in function2's frame
+     rsp = 0x00007fffffffdec0
+     rbp = 0x00007fffffffded0
+(lldb) x/2f $rsp # the temporary now contains the product result
+0x7fffffffdec0: 12.56
+0x7fffffffdec8: 2

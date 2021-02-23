@@ -1,0 +1,140 @@
+$ lldb ./hello-shellcode
+(lldb) target create "hello-shellcode"
+Current executable set to '/mnt/hgfs/binary-hack/lectures/1-x86_64/hello-shellcode' (x86_64).
+(lldb) b 26 # let's stop before mmap is called
+Breakpoint 1: where = hello-shellcode`main + 33 at hello-shellcode.c:26:8, address = 0x0000000000401161
+(lldb) r
+Process 120469 launched: '/mnt/hgfs/binary-hack/lectures/1-x86_64/hello-shellcode' (x86_64)
+Process 120469 stopped
+* thread #1, name = 'hello-shellcode', stop reason = breakpoint 1.1
+    frame #0: 0x0000000000401161 hello-shellcode`main(argc=1, argv=0x00007fffffffdfd8) at hello-shellcode.c:26:8
+   23  
+   24     char *buf;
+   25     int  prot  = PROT_READ | PROT_WRITE | PROT_EXEC;
+-> 26     int  flags = MAP_PRIVATE | MAP_ANONYMOUS;
+   27  
+   28     buf = mmap(0, sizeof(code), prot, flags, -1, 0);
+   29     memcpy(buf, code, sizeof(code));
+(lldb) pla sh cat /proc/120469/maps # memory map at that point, pla sh call shell command
+00400000-00401000 r--p 00000000 00:2f 346                                /mnt/hgfs/binary-hack/lectures/1-x86_64/hello-shellcode
+00401000-00402000 r-xp 00001000 00:2f 346                                /mnt/hgfs/binary-hack/lectures/1-x86_64/hello-shellcode
+00402000-00403000 r--p 00002000 00:2f 346                                /mnt/hgfs/binary-hack/lectures/1-x86_64/hello-shellcode
+00403000-00404000 r--p 00002000 00:2f 346                                /mnt/hgfs/binary-hack/lectures/1-x86_64/hello-shellcode
+00404000-00405000 rw-p 00003000 00:2f 346                                /mnt/hgfs/binary-hack/lectures/1-x86_64/hello-shellcode
+7ffff7dc0000-7ffff7de5000 r--p 00000000 08:05 264372                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7ffff7de5000-7ffff7f5d000 r-xp 00025000 08:05 264372                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7ffff7f5d000-7ffff7fa7000 r--p 0019d000 08:05 264372                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7ffff7fa7000-7ffff7fa8000 ---p 001e7000 08:05 264372                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7ffff7fa8000-7ffff7fab000 r--p 001e7000 08:05 264372                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7ffff7fab000-7ffff7fae000 rw-p 001ea000 08:05 264372                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7ffff7fae000-7ffff7fb4000 rw-p 00000000 00:00 0 
+7ffff7fc9000-7ffff7fcd000 r--p 00000000 00:00 0                          [vvar]
+7ffff7fcd000-7ffff7fcf000 r-xp 00000000 00:00 0                          [vdso]
+7ffff7fcf000-7ffff7fd0000 r--p 00000000 08:05 264367                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7ffff7fd0000-7ffff7ff3000 r-xp 00001000 08:05 264367                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7ffff7ff3000-7ffff7ffb000 r--p 00024000 08:05 264367                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7ffff7ffc000-7ffff7ffd000 r--p 0002c000 08:05 264367                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7ffff7ffd000-7ffff7ffe000 rw-p 0002d000 08:05 264367                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7ffff7ffe000-7ffff7fff000 rw-p 00000000 00:00 0 
+7ffffffde000-7ffffffff000 rw-p 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]
+(lldb) b 31 # stop after calling mmap and copying the shellcode
+Breakpoint 2: where = hello-shellcode`main + 103 at hello-shellcode.c:31:3, address = 0x00000000004011a7
+(lldb) c
+Process 120469 resuming
+Process 120469 stopped
+* thread #1, name = 'hello-shellcode', stop reason = breakpoint 2.1
+    frame #0: 0x00000000004011a7 hello-shellcode`main(argc=1, argv=0x00007fffffffdfd8) at hello-shellcode.c:31:3
+   28     buf = mmap(0, sizeof(code), prot, flags, -1, 0);
+   29     memcpy(buf, code, sizeof(code));
+   30  
+-> 31     ((void (*)(void))buf)();
+   32  
+   33     return EXIT_SUCCESS;
+   34   }
+(lldb) pla sh cat /proc/120469/maps # memory map after mmap call
+00400000-00401000 r--p 00000000 00:2f 346                                /mnt/hgfs/binary-hack/lectures/1-x86_64/hello-shellcode
+00401000-00402000 r-xp 00001000 00:2f 346                                /mnt/hgfs/binary-hack/lectures/1-x86_64/hello-shellcode
+00402000-00403000 r--p 00002000 00:2f 346                                /mnt/hgfs/binary-hack/lectures/1-x86_64/hello-shellcode
+00403000-00404000 r--p 00002000 00:2f 346                                /mnt/hgfs/binary-hack/lectures/1-x86_64/hello-shellcode
+00404000-00405000 rw-p 00003000 00:2f 346                                /mnt/hgfs/binary-hack/lectures/1-x86_64/hello-shellcode
+7ffff7dc0000-7ffff7de5000 r--p 00000000 08:05 264372                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7ffff7de5000-7ffff7f5d000 r-xp 00025000 08:05 264372                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7ffff7f5d000-7ffff7fa7000 r--p 0019d000 08:05 264372                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7ffff7fa7000-7ffff7fa8000 ---p 001e7000 08:05 264372                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7ffff7fa8000-7ffff7fab000 r--p 001e7000 08:05 264372                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7ffff7fab000-7ffff7fae000 rw-p 001ea000 08:05 264372                     /usr/lib/x86_64-linux-gnu/libc-2.31.so
+7ffff7fae000-7ffff7fb4000 rw-p 00000000 00:00 0 
+7ffff7fc9000-7ffff7fcd000 r--p 00000000 00:00 0                          [vvar]
+7ffff7fcd000-7ffff7fcf000 r-xp 00000000 00:00 0                          [vdso]
+7ffff7fcf000-7ffff7fd0000 r--p 00000000 08:05 264367                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7ffff7fd0000-7ffff7ff3000 r-xp 00001000 08:05 264367                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7ffff7ff3000-7ffff7ffb000 r--p 00024000 08:05 264367                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+
+# This is new! this is where the shellcode was copied (note the executable permission)
+7ffff7ffb000-7ffff7ffc000 rwxp 00000000 00:00 0
+
+7ffff7ffc000-7ffff7ffd000 r--p 0002c000 08:05 264367                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7ffff7ffd000-7ffff7ffe000 rw-p 0002d000 08:05 264367                     /usr/lib/x86_64-linux-gnu/ld-2.31.so
+7ffff7ffe000-7ffff7fff000 rw-p 00000000 00:00 0 
+7ffffffde000-7ffffffff000 rw-p 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 --xp 00000000 00:00 0                  [vsyscall]
+(lldb) x/8xb 0x7ffff7ffb000 # let's check few bytes
+0x7ffff7ffb000: 0xeb 0x1b 0xb8 0x01 0x00 0x00 0x00 0xbf
+(lldb) x/8i 0x7ffff7ffb000 # let's dissasemble
+    0x7ffff7ffb000: eb 1b           jmp    0x7ffff7ffb01d
+    0x7ffff7ffb002: b8 01 00 00 00  mov    eax, 0x1
+    0x7ffff7ffb007: bf 01 00 00 00  mov    edi, 0x1
+    0x7ffff7ffb00c: 5e              pop    rsi
+    0x7ffff7ffb00d: ba 0c 00 00 00  mov    edx, 0xc
+    0x7ffff7ffb012: 0f 05           syscall 
+    0x7ffff7ffb014: b8 3c 00 00 00  mov    eax, 0x3c
+    0x7ffff7ffb019: 31 ff           xor    edi, edi
+
+
+(lldb) pla sh readelf -l ./hello-shellcode # you can also see the segments of the main program
+
+Elf file type is EXEC (Executable file)
+Entry point 0x401050
+There are 11 program headers, starting at offset 64
+
+Program Headers:
+  Type           Offset             VirtAddr           PhysAddr
+                 FileSiz            MemSiz              Flags  Align
+  PHDR           0x0000000000000040 0x0000000000400040 0x0000000000400040
+                 0x0000000000000268 0x0000000000000268  R      0x8
+  INTERP         0x00000000000002a8 0x00000000004002a8 0x00000000004002a8
+                 0x000000000000001c 0x000000000000001c  R      0x1
+      [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
+  LOAD           0x0000000000000000 0x0000000000400000 0x0000000000400000
+                 0x0000000000000490 0x0000000000000490  R      0x1000
+  LOAD           0x0000000000001000 0x0000000000401000 0x0000000000401000
+                 0x0000000000000245 0x0000000000000245  R E    0x1000
+  LOAD           0x0000000000002000 0x0000000000402000 0x0000000000402000
+                 0x0000000000000170 0x0000000000000170  R      0x1000
+  LOAD           0x0000000000002e10 0x0000000000403e10 0x0000000000403e10
+                 0x0000000000000228 0x0000000000000230  RW     0x1000
+  DYNAMIC        0x0000000000002e20 0x0000000000403e20 0x0000000000403e20
+                 0x00000000000001d0 0x00000000000001d0  RW     0x8
+  NOTE           0x00000000000002c4 0x00000000004002c4 0x00000000004002c4
+                 0x0000000000000044 0x0000000000000044  R      0x4
+  GNU_EH_FRAME   0x0000000000002048 0x0000000000402048 0x0000000000402048
+                 0x000000000000003c 0x000000000000003c  R      0x4
+  GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000
+                 0x0000000000000000 0x0000000000000000  RW     0x10
+  GNU_RELRO      0x0000000000002e10 0x0000000000403e10 0x0000000000403e10
+                 0x00000000000001f0 0x00000000000001f0  R      0x1
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .interp 
+   02     .interp .note.gnu.build-id .note.ABI-tag .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rela.dyn .rela.plt 
+   03     .init .plt .text .fini 
+   04     .rodata .eh_frame_hdr .eh_frame 
+   05     .init_array .fini_array .dynamic .got .got.plt .data .bss 
+   06     .dynamic 
+   07     .note.gnu.build-id .note.ABI-tag 
+   08     .eh_frame_hdr 
+   09     
+   10     .init_array .fini_array .dynamic .got

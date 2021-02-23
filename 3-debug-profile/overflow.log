@@ -1,0 +1,213 @@
+$ ./overflow test
+[1]    5666 segmentation fault (core dumped)  ./overflow test
+$ lldb ./overflow -- test # segmentation fault emits signal 11, it is an automatic breakpoint in the debugger
+(lldb) target create "./overflow"
+Current executable set to '/mnt/hgfs/binary-hack/lectures/3-debug-profile/overflow' (x86_64).
+(lldb) settings set -- target.run-args  "test"
+(lldb) r
+Process 9029 launched: '/mnt/hgfs/binary-hack/lectures/3-debug-profile/overflow' (x86_64)
+Process 9029 stopped
+* thread #1, name = 'overflow', stop reason = signal SIGSEGV: invalid address (fault address: 0x0)
+    frame #0: 0x0000000000401181 overflow`main(argc=2, argv=0x00007fffffffdfc8) at overflow.c:12:17
+   9   
+   10       for (l = strlen(s); l >= 0; l--)
+   11       {
+-> 12           putchar(s[l]);
+   13       }
+   14       putchar('\n');
+   15
+(lldb) ^D
+$ lldb -c core # you can also analyse a core dump
+(lldb) target create --core "core"
+Core file '/mnt/hgfs/binary-hack/lectures/3-debug-profile/core' (x86_64) was loaded.
+(lldb) bt # backtrace of crash
+* thread #1, name = 'overflow', stop reason = signal SIGSEGV
+  * frame #0: 0x0000000000401181 overflow`main(argc=2, argv=0x00007ffde7a514a8) at overflow.c:12:17
+    frame #1: 0x00007f26fb18a0b3 libc.so.6`__libc_start_main + 243
+    frame #2: 0x000000000040107e overflow`_start + 46
+(lldb) l
+   6    {
+   7        unsigned int l;
+   8        char         *s = argv[1];
+   9   
+   10       for (l = strlen(s); l >= 0; l--)
+   11       {
+   12           putchar(s[l]);
+   13       }
+   14       putchar('\n');
+   15  
+(lldb) d # the code was trying to access a byte at adress rax + rdx
+overflow`main:
+    0x401140 <+0>:   push   rbp
+    0x401141 <+1>:   mov    rbp, rsp
+    0x401144 <+4>:   sub    rsp, 0x30
+    0x401148 <+8>:   mov    dword ptr [rbp - 0x4], 0x0
+    0x40114f <+15>:  mov    dword ptr [rbp - 0x8], edi
+    0x401152 <+18>:  mov    qword ptr [rbp - 0x10], rsi
+    0x401156 <+22>:  mov    rax, qword ptr [rbp - 0x10]
+    0x40115a <+26>:  mov    rax, qword ptr [rax + 0x8]
+    0x40115e <+30>:  mov    qword ptr [rbp - 0x20], rax
+    0x401162 <+34>:  mov    rdi, qword ptr [rbp - 0x20]
+    0x401166 <+38>:  call   0x401040                  ; symbol stub for: strlen
+    0x40116b <+43>:  mov    dword ptr [rbp - 0x14], eax
+    0x40116e <+46>:  cmp    dword ptr [rbp - 0x14], 0x0
+    0x401172 <+50>:  jb     0x401198                  ; <+88> at overflow.c:14:5
+    0x401178 <+56>:  mov    rax, qword ptr [rbp - 0x20]
+    0x40117c <+60>:  mov    ecx, dword ptr [rbp - 0x14]
+    0x40117f <+63>:  mov    edx, ecx
+->  0x401181 <+65>:  movsx  edi, byte ptr [rax + rdx]
+    0x401185 <+69>:  call   0x401030                  ; symbol stub for: putchar
+    0x40118a <+74>:  mov    eax, dword ptr [rbp - 0x14]
+    0x40118d <+77>:  add    eax, -0x1
+    0x401190 <+80>:  mov    dword ptr [rbp - 0x14], eax
+    0x401193 <+83>:  jmp    0x40116e                  ; <+46> at overflow.c:10:27
+    0x401198 <+88>:  mov    edi, 0xa
+    0x40119d <+93>:  call   0x401030                  ; symbol stub for: putchar
+    0x4011a2 <+98>:  xor    ecx, ecx
+    0x4011a4 <+100>: mov    dword ptr [rbp - 0x24], eax
+    0x4011a7 <+103>: mov    eax, ecx
+    0x4011a9 <+105>: add    rsp, 0x30
+    0x4011ad <+109>: pop    rbp
+    0x4011ae <+110>: ret    
+(lldb) re r rax rdx # rax looks like a memory adress, rdx is clearly a max 32b integer
+     rax = 0x00007ffde7a532e4
+     rdx = 0x00000000ffffffff
+(lldb) x/s $rax # rax is the string entered
+0x7ffde7a532e4: "test"
+(lldb) p l # rdx is l, which has underflowed, causing the error
+(unsigned int) $1 = 4294967295
+(lldb) ^D
+$ file core # coredumps are ELF files
+core: ELF 64-bit LSB core file, x86-64, version 1 (SYSV), SVR4-style, from './overflow test', real uid: 1000, effective uid: 1000, real gid: 1000, effective gid: 1000, execfn: './overflow', platform: 'x86_64'
+$ readelf -a core # you can use readelf on them
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              CORE (Core file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x0
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          0 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         24
+  Size of section headers:           0 (bytes)
+  Number of section headers:         0
+  Section header string table index: 0
+
+There are no sections in this file.
+
+There are no sections to group in this file.
+
+Program Headers:
+  Type           Offset             VirtAddr           PhysAddr
+                 FileSiz            MemSiz              Flags  Align
+  NOTE           0x0000000000000580 0x0000000000000000 0x0000000000000000
+                 0x0000000000000db0 0x0000000000000000         0x0
+  LOAD           0x0000000000002000 0x0000000000400000 0x0000000000000000
+                 0x0000000000001000 0x0000000000001000  R      0x1000
+  LOAD           0x0000000000003000 0x0000000000401000 0x0000000000000000
+                 0x0000000000000000 0x0000000000001000  R E    0x1000
+  LOAD           0x0000000000003000 0x0000000000402000 0x0000000000000000
+                 0x0000000000000000 0x0000000000001000  R      0x1000
+  LOAD           0x0000000000003000 0x0000000000403000 0x0000000000000000
+                 0x0000000000001000 0x0000000000001000  R      0x1000
+  LOAD           0x0000000000004000 0x0000000000404000 0x0000000000000000
+                 0x0000000000001000 0x0000000000001000  RW     0x1000
+  LOAD           0x0000000000005000 0x0000000001b3a000 0x0000000000000000
+                 0x0000000000021000 0x0000000000021000  RW     0x1000
+  LOAD           0x0000000000026000 0x00007f26fb163000 0x0000000000000000
+                 0x0000000000001000 0x0000000000025000  R      0x1000
+  LOAD           0x0000000000027000 0x00007f26fb188000 0x0000000000000000
+                 0x0000000000000000 0x0000000000178000  R E    0x1000
+  LOAD           0x0000000000027000 0x00007f26fb300000 0x0000000000000000
+                 0x0000000000000000 0x000000000004a000  R      0x1000
+  LOAD           0x0000000000027000 0x00007f26fb34a000 0x0000000000000000
+                 0x0000000000000000 0x0000000000001000         0x1000
+  LOAD           0x0000000000027000 0x00007f26fb34b000 0x0000000000000000
+                 0x0000000000003000 0x0000000000003000  R      0x1000
+  LOAD           0x000000000002a000 0x00007f26fb34e000 0x0000000000000000
+                 0x0000000000003000 0x0000000000003000  RW     0x1000
+  LOAD           0x000000000002d000 0x00007f26fb351000 0x0000000000000000
+                 0x0000000000006000 0x0000000000006000  RW     0x1000
+  LOAD           0x0000000000033000 0x00007f26fb36c000 0x0000000000000000
+                 0x0000000000001000 0x0000000000001000  R      0x1000
+  LOAD           0x0000000000034000 0x00007f26fb36d000 0x0000000000000000
+                 0x0000000000000000 0x0000000000023000  R E    0x1000
+  LOAD           0x0000000000034000 0x00007f26fb390000 0x0000000000000000
+                 0x0000000000000000 0x0000000000008000  R      0x1000
+  LOAD           0x0000000000034000 0x00007f26fb399000 0x0000000000000000
+                 0x0000000000001000 0x0000000000001000  R      0x1000
+  LOAD           0x0000000000035000 0x00007f26fb39a000 0x0000000000000000
+                 0x0000000000001000 0x0000000000001000  RW     0x1000
+  LOAD           0x0000000000036000 0x00007f26fb39b000 0x0000000000000000
+                 0x0000000000001000 0x0000000000001000  RW     0x1000
+  LOAD           0x0000000000037000 0x00007ffde7a33000 0x0000000000000000
+                 0x0000000000021000 0x0000000000021000  RW     0x1000
+  LOAD           0x0000000000058000 0x00007ffde7b55000 0x0000000000000000
+                 0x0000000000004000 0x0000000000004000  R      0x1000
+  LOAD           0x000000000005c000 0x00007ffde7b59000 0x0000000000000000
+                 0x0000000000002000 0x0000000000002000  R E    0x1000
+  LOAD           0x000000000005e000 0xffffffffff600000 0x0000000000000000
+                 0x0000000000001000 0x0000000000001000    E    0x1000
+
+There is no dynamic section in this file.
+
+There are no relocations in this file.
+
+The decoding of unwind sections for machine type Advanced Micro Devices X86-64 is not currently supported.
+
+Dynamic symbol information is not available for displaying symbols.
+
+No version information found in this file.
+
+Displaying notes found at file offset 0x00000580 with length 0x00000db0:
+  Owner                Data size        Description
+  CORE                 0x00000150       NT_PRSTATUS (prstatus structure)
+  CORE                 0x00000088       NT_PRPSINFO (prpsinfo structure)
+  CORE                 0x00000080       NT_SIGINFO (siginfo_t data)
+  CORE                 0x00000140       NT_AUXV (auxiliary vector)
+  CORE                 0x0000044b       NT_FILE (mapped files)
+    Page size: 4096
+                 Start                 End         Page Offset
+    0x0000000000400000  0x0000000000401000  0x0000000000000000
+        /mnt/hgfs/binary-hack/lectures/3-debug-profile/overflow
+    0x0000000000401000  0x0000000000402000  0x0000000000000001
+        /mnt/hgfs/binary-hack/lectures/3-debug-profile/overflow
+    0x0000000000402000  0x0000000000403000  0x0000000000000002
+        /mnt/hgfs/binary-hack/lectures/3-debug-profile/overflow
+    0x0000000000403000  0x0000000000404000  0x0000000000000002
+        /mnt/hgfs/binary-hack/lectures/3-debug-profile/overflow
+    0x0000000000404000  0x0000000000405000  0x0000000000000003
+        /mnt/hgfs/binary-hack/lectures/3-debug-profile/overflow
+    0x00007f26fb163000  0x00007f26fb188000  0x0000000000000000
+        /usr/lib/x86_64-linux-gnu/libc-2.31.so
+    0x00007f26fb188000  0x00007f26fb300000  0x0000000000000025
+        /usr/lib/x86_64-linux-gnu/libc-2.31.so
+    0x00007f26fb300000  0x00007f26fb34a000  0x000000000000019d
+        /usr/lib/x86_64-linux-gnu/libc-2.31.so
+    0x00007f26fb34a000  0x00007f26fb34b000  0x00000000000001e7
+        /usr/lib/x86_64-linux-gnu/libc-2.31.so
+    0x00007f26fb34b000  0x00007f26fb34e000  0x00000000000001e7
+        /usr/lib/x86_64-linux-gnu/libc-2.31.so
+    0x00007f26fb34e000  0x00007f26fb351000  0x00000000000001ea
+        /usr/lib/x86_64-linux-gnu/libc-2.31.so
+    0x00007f26fb36c000  0x00007f26fb36d000  0x0000000000000000
+        /usr/lib/x86_64-linux-gnu/ld-2.31.so
+    0x00007f26fb36d000  0x00007f26fb390000  0x0000000000000001
+        /usr/lib/x86_64-linux-gnu/ld-2.31.so
+    0x00007f26fb390000  0x00007f26fb398000  0x0000000000000024
+        /usr/lib/x86_64-linux-gnu/ld-2.31.so
+    0x00007f26fb399000  0x00007f26fb39a000  0x000000000000002c
+        /usr/lib/x86_64-linux-gnu/ld-2.31.so
+    0x00007f26fb39a000  0x00007f26fb39b000  0x000000000000002d
+        /usr/lib/x86_64-linux-gnu/ld-2.31.so
+  CORE                 0x00000200       NT_FPREGSET (floating point registers)
+  LINUX                0x00000340       NT_X86_XSTATE (x86 XSAVE extended state)
+   description data: 7f 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 1f 00 00 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 a0 a2 b3 01 00 00 00 00 a0 a6 b3 01 00 00 00 00 a0 a2 b3 01 00 00 00 00 00 00 00 00 00 00 00 00 a0 a6 b3 01 00 00 00 00 00 00 00 00 00 00 00 00 00 ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 2f 2f 2f 2f 2f 2f 2f 2f 2f 2f 2f 2f 2f 2f 2f 2f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 20 55 35 fb 26 7f 00 00 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00

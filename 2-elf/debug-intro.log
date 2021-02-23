@@ -1,0 +1,170 @@
+$ lldb hello
+(lldb) target create "hello"
+Current executable set to '/mnt/hgfs/binary-hack/lectures/1-x86_64/hello' (x86_64).
+(lldb) r # run
+Process 62328 launched: '/mnt/hgfs/binary-hack/lectures/1-x86_64/hello' (x86_64)
+Hello world
+Process 62328 exited with status = 0 (0x00000000) 
+(lldb) l
+   5    {
+   6      printf("Hello world\n");
+   7   
+   8      return EXIT_SUCCESS;
+   9    }
+   10  
+(lldb) b 6 # breakpoint at line 6
+Breakpoint 1: where = hello`main + 15 at hello.c:6:3, address = 0x000000000040113f
+(lldb) r
+Process 62352 launched: '/mnt/hgfs/binary-hack/lectures/1-x86_64/hello' (x86_64)
+Process 62352 stopped
+* thread #1, name = 'hello', stop reason = breakpoint 1.1
+    frame #0: 0x000000000040113f hello`main at hello.c:6:3
+   3   
+   4    int main(void)
+   5    {
+-> 6      printf("Hello world\n");
+   7   
+   8      return EXIT_SUCCESS;
+   9    }
+(lldb) re r # read registers
+General Purpose Registers:
+       rax = 0x0000000000401130  hello`main at hello.c:5
+       rbx = 0x0000000000401160  hello`__libc_csu_init
+       rcx = 0x0000000000401160  hello`__libc_csu_init
+       rdx = 0x00007fffffffdff8
+       rdi = 0x0000000000000001
+       rsi = 0x00007fffffffdfe8
+       rbp = 0x00007fffffffdef0
+       rsp = 0x00007fffffffdee0
+        r8 = 0x0000000000000000
+        r9 = 0x00007ffff7fe0d50  ld-2.31.so`___lldb_unnamed_symbol59$$ld-2.31.so
+       r10 = 0x0000000000000002
+       r11 = 0x0000000000000000
+       r12 = 0x0000000000401040  hello`_start
+       r13 = 0x00007fffffffdfe0
+       r14 = 0x0000000000000000
+       r15 = 0x0000000000000000
+       rip = 0x000000000040113f  hello`main + 15 at hello.c:6:3
+    rflags = 0x0000000000000202
+        cs = 0x0000000000000033
+        fs = 0x0000000000000000
+        gs = 0x0000000000000000
+        ss = 0x000000000000002b
+        ds = 0x0000000000000000
+        es = 0x0000000000000000
+(lldb) d # dissasemble at current breakpoint
+hello`main:
+    0x401130 <+0>:  push   rbp
+    0x401131 <+1>:  mov    rbp, rsp
+    0x401134 <+4>:  sub    rsp, 0x10
+    0x401138 <+8>:  mov    dword ptr [rbp - 0x4], 0x0
+->  0x40113f <+15>: movabs rdi, 0x402004
+    0x401149 <+25>: mov    al, 0x0
+    0x40114b <+27>: call   0x401030                  ; symbol stub for: printf
+    0x401150 <+32>: xor    ecx, ecx
+    0x401152 <+34>: mov    dword ptr [rbp - 0x8], eax
+    0x401155 <+37>: mov    eax, ecx
+    0x401157 <+39>: add    rsp, 0x10
+    0x40115b <+43>: pop    rbp
+    0x40115c <+44>: ret    
+(lldb) re r rip # read rip (this is the next inatruction)
+     rip = 0x000000000040113f  hello`main + 15 at hello.c:6:3
+(lldb) si # step by one instruction
+Process 62481 stopped
+* thread #1, name = 'hello', stop reason = instruction step into
+    frame #0: 0x0000000000401149 hello`main at hello.c:6:3
+   3   
+   4    int main(void)
+   5    {
+-> 6      printf("Hello world\n");
+   7   
+   8      return EXIT_SUCCESS;
+   9    }
+(lldb) d # check that we stepped just one instruction
+hello`main:
+    0x401130 <+0>:  push   rbp
+    0x401131 <+1>:  mov    rbp, rsp
+    0x401134 <+4>:  sub    rsp, 0x10
+    0x401138 <+8>:  mov    dword ptr [rbp - 0x4], 0x0
+    0x40113f <+15>: movabs rdi, 0x402004
+->  0x401149 <+25>: mov    al, 0x0
+    0x40114b <+27>: call   0x401030                  ; symbol stub for: printf
+    0x401150 <+32>: xor    ecx, ecx
+    0x401152 <+34>: mov    dword ptr [rbp - 0x8], eax
+    0x401155 <+37>: mov    eax, ecx
+    0x401157 <+39>: add    rsp, 0x10
+    0x40115b <+43>: pop    rbp
+    0x40115c <+44>: ret    
+(lldb) re r rip # check rip again
+     rip = 0x0000000000401149  hello`main + 25 at hello.c:6:3
+(lldb) si
+Process 62645 stopped
+* thread #1, name = 'hello', stop reason = instruction step into
+    frame #0: 0x000000000040114b hello`main at hello.c:6:3
+   3   
+   4    int main(void)
+   5    {
+-> 6      printf("Hello world\n");
+   7   
+   8      return EXIT_SUCCESS;
+   9    }
+(lldb) d
+hello`main:
+    0x401130 <+0>:  push   rbp
+    0x401131 <+1>:  mov    rbp, rsp
+    0x401134 <+4>:  sub    rsp, 0x10
+    0x401138 <+8>:  mov    dword ptr [rbp - 0x4], 0x0
+    0x40113f <+15>: movabs rdi, 0x402004
+    0x401149 <+25>: mov    al, 0x0
+->  0x40114b <+27>: call   0x401030                  ; symbol stub for: printf
+    0x401150 <+32>: xor    ecx, ecx
+    0x401152 <+34>: mov    dword ptr [rbp - 0x8], eax
+    0x401155 <+37>: mov    eax, ecx
+    0x401157 <+39>: add    rsp, 0x10
+    0x40115b <+43>: pop    rbp
+    0x40115c <+44>: ret
+(lldb) si # one more step (we will be in printf call)
+Process 62645 stopped
+* thread #1, name = 'hello', stop reason = instruction step into
+    frame #0: 0x0000000000401030 hello`printf
+hello`printf:
+->  0x401030 <+0>:  jmp    qword ptr [rip + 0x2fe2]  ; _GLOBAL_OFFSET_TABLE_ + 24
+    0x401036 <+6>:  push   0x0
+    0x40103b <+11>: jmp    0x401020
+
+hello`_start:
+    0x401040 <+0>:  endbr64
+(lldb) bt # backtrace
+* thread #1, name = 'hello', stop reason = instruction step into
+  * frame #0: 0x0000000000401030 hello`printf
+    frame #1: 0x0000000000401150 hello`main at hello.c:6:3
+    frame #2: 0x00007ffff7de70b3 libc.so.6`__libc_start_main + 243
+    frame #3: 0x000000000040106e hello`_start + 46
+(lldb) r # run from start again
+There is a running process, kill it and restart?: [Y/n] 
+Process 62719 exited with status = 9 (0x00000009) 
+Process 62819 launched: '/mnt/hgfs/binary-hack/lectures/1-x86_64/hello' (x86_64)
+Process 62819 stopped
+* thread #1, name = 'hello', stop reason = breakpoint 1.1
+    frame #0: 0x000000000040113f hello`main at hello.c:6:3
+   3   
+   4    int main(void)
+   5    {
+-> 6      printf("Hello world\n");
+   7   
+   8      return EXIT_SUCCESS;
+   9    }
+(lldb) s # step one line of code
+Hello world
+Process 62819 stopped
+* thread #1, name = 'hello', stop reason = step in
+    frame #0: 0x0000000000401155 hello`main at hello.c:8:3
+   5    {
+   6      printf("Hello world\n");
+   7   
+-> 8      return EXIT_SUCCESS;
+   9    }
+   10
+(lldb) c # continue until next breakpoint (none here)
+Process 62819 resuming
+Process 62819 exited with status = 0 (0x00000000)
