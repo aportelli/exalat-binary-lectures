@@ -1,0 +1,96 @@
+n overriden to 4
+# square matrix nxn with n = 4 (2.38419e-07 GB)
+# columns: routine | GFlop/s | GB/s
+          dgemm_heap       0.97       3.08
+       dgemm_heap_mt       0.03       0.11
+         dgemm_stack       1.06       3.39
+      dgemm_stack_mt       0.03       0.09
+           dgemm_mkl       0.39       1.25
+n overriden to 8
+# square matrix nxn with n = 8 (9.53674e-07 GB)
+# columns: routine | GFlop/s | GB/s
+          dgemm_heap       1.25       1.86
+       dgemm_heap_mt       0.15       0.23
+         dgemm_stack       1.30       1.94
+      dgemm_stack_mt       0.11       0.16
+           dgemm_mkl       2.00       2.99
+n overriden to 16
+# square matrix nxn with n = 16 (3.8147e-06 GB)
+# columns: routine | GFlop/s | GB/s
+          dgemm_heap       3.36       2.43
+       dgemm_heap_mt       1.42       1.03
+         dgemm_stack       5.85       4.22
+      dgemm_stack_mt       1.68       1.21
+           dgemm_mkl       9.13       6.58
+n overriden to 32
+# square matrix nxn with n = 32 (1.52588e-05 GB)
+# columns: routine | GFlop/s | GB/s
+          dgemm_heap       4.44       1.57
+       dgemm_heap_mt       6.85       2.43
+         dgemm_stack       5.57       1.98
+      dgemm_stack_mt       7.65       2.71
+           dgemm_mkl      18.11       6.42
+n overriden to 64
+# square matrix nxn with n = 64 (6.10352e-05 GB)
+# columns: routine | GFlop/s | GB/s
+          dgemm_heap       6.31       1.11
+       dgemm_heap_mt      38.99       6.86
+         dgemm_stack       6.31       1.11
+      dgemm_stack_mt      30.65       5.40
+           dgemm_mkl      61.10      10.75
+n overriden to 128
+# square matrix nxn with n = 128 (0.000244141 GB)
+# columns: routine | GFlop/s | GB/s
+          dgemm_heap       6.01       0.53
+       dgemm_heap_mt      64.33       5.64
+         dgemm_stack       6.19       0.54
+      dgemm_stack_mt      63.69       5.58
+           dgemm_mkl     160.11      14.03
+n overriden to 256
+# square matrix nxn with n = 256 (0.000976562 GB)
+# columns: routine | GFlop/s | GB/s
+          dgemm_heap       6.46       0.28
+       dgemm_heap_mt      73.96       3.23
+         dgemm_stack       6.57       0.29
+      dgemm_stack_mt      74.62       3.26
+           dgemm_mkl     194.39       8.50
+n overriden to 512
+# square matrix nxn with n = 512 (0.00390625 GB)
+# columns: routine | GFlop/s | GB/s
+          dgemm_heap       4.51       0.10
+       dgemm_heap_mt      53.88       1.18
+         dgemm_stack       5.01       0.11
+      dgemm_stack_mt      60.94       1.33
+           dgemm_mkl     228.35       4.99
+n overriden to 1024
+# square matrix nxn with n = 1024 (0.015625 GB)
+# columns: routine | GFlop/s | GB/s
+          dgemm_heap       5.04       0.05
+       dgemm_heap_mt      56.69       0.62
+         dgemm_stack       5.04       0.06
+      dgemm_stack_mt      59.53       0.65
+           dgemm_mkl     245.88       2.68
+n overriden to 2048
+# square matrix nxn with n = 2048 (0.0625 GB)
+# columns: routine | GFlop/s | GB/s
+          dgemm_heap       3.28       0.02
+       dgemm_heap_mt      30.30       0.17
+         dgemm_stack       3.32       0.02
+      dgemm_stack_mt      29.39       0.16
+           dgemm_mkl     243.92       1.33
+n overriden to 4096
+# square matrix nxn with n = 4096 (0.25 GB)
+# columns: routine | GFlop/s | GB/s
+          dgemm_heap       2.87       0.01
+       dgemm_heap_mt      28.89       0.08
+         dgemm_stack       2.90       0.01
+      dgemm_stack_mt      30.37       0.08
+           dgemm_mkl     255.99       0.70
+n overriden to 8192
+# square matrix nxn with n = 8192 (1 GB)
+# columns: routine | GFlop/s | GB/s
+          dgemm_heap       2.74       0.00
+       dgemm_heap_mt      30.07       0.04
+         dgemm_stack       2.77       0.00
+      dgemm_stack_mt      30.35       0.04
+           dgemm_mkl     256.71       0.35

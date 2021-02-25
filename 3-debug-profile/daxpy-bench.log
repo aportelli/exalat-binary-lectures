@@ -1,0 +1,250 @@
+vector size overriden to 4
+# vector size 4 (5.96046e-08 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       1.48      16.56
+         daxpy_stack       4.79      53.53
+           daxpy_vec       1.67      18.62
+           daxpy_mkl       0.41       4.57
+       daxpy_heap_mt       0.00       0.05
+      daxpy_stack_mt       0.00       0.05
+        daxpy_vec_mt       0.00       0.05
+vector size overriden to 8
+# vector size 8 (1.19209e-07 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       1.96      21.95
+         daxpy_stack       9.58     107.10
+           daxpy_vec       1.74      19.45
+           daxpy_mkl       0.73       8.17
+       daxpy_heap_mt       0.01       0.09
+      daxpy_stack_mt       0.01       0.08
+        daxpy_vec_mt       0.01       0.09
+vector size overriden to 16
+# vector size 16 (2.38419e-07 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       6.70      74.87
+         daxpy_stack      16.73     186.95
+           daxpy_vec       6.70      74.89
+           daxpy_mkl       1.46      16.29
+       daxpy_heap_mt       0.02       0.17
+      daxpy_stack_mt       0.01       0.14
+        daxpy_vec_mt       0.02       0.17
+vector size overriden to 32
+# vector size 32 (4.76837e-07 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       8.80      98.40
+         daxpy_stack      33.51     374.46
+           daxpy_vec       8.93      99.84
+           daxpy_mkl       2.79      31.23
+       daxpy_heap_mt       0.03       0.37
+      daxpy_stack_mt       0.02       0.25
+        daxpy_vec_mt       0.03       0.37
+vector size overriden to 64
+# vector size 64 (9.53674e-07 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap      10.00     111.77
+         daxpy_stack      33.48     374.11
+           daxpy_vec      10.00     111.79
+           daxpy_mkl       5.15      57.51
+       daxpy_heap_mt       0.06       0.70
+      daxpy_stack_mt       0.04       0.49
+        daxpy_vec_mt       0.06       0.73
+vector size overriden to 128
+# vector size 128 (1.90735e-06 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       9.99     111.68
+         daxpy_stack      30.63     342.34
+           daxpy_vec       9.98     111.52
+           daxpy_mkl       8.91      99.54
+       daxpy_heap_mt       0.14       1.54
+      daxpy_stack_mt       0.12       1.29
+        daxpy_vec_mt       0.13       1.45
+vector size overriden to 256
+# vector size 256 (3.8147e-06 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       9.92     110.87
+         daxpy_stack      11.17     124.79
+           daxpy_vec       9.94     111.14
+           daxpy_mkl       8.70      97.22
+       daxpy_heap_mt       0.25       2.76
+      daxpy_stack_mt       0.22       2.51
+        daxpy_vec_mt       0.25       2.77
+vector size overriden to 512
+# vector size 512 (7.62939e-06 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       8.92      99.74
+         daxpy_stack       8.76      97.85
+           daxpy_vec       8.93      99.85
+           daxpy_mkl       9.71     108.49
+       daxpy_heap_mt       0.46       5.19
+      daxpy_stack_mt       0.49       5.42
+        daxpy_vec_mt       0.46       5.17
+vector size overriden to 1024
+# vector size 1024 (1.52588e-05 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       8.91      99.60
+         daxpy_stack      11.16     124.73
+           daxpy_vec       8.93      99.85
+           daxpy_mkl      10.52     117.55
+       daxpy_heap_mt       0.90      10.05
+      daxpy_stack_mt       0.91      10.20
+        daxpy_vec_mt       0.90      10.04
+vector size overriden to 2048
+# vector size 2048 (3.05176e-05 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       8.90      99.45
+         daxpy_stack      11.16     124.77
+           daxpy_vec       8.90      99.46
+           daxpy_mkl       9.01     100.68
+       daxpy_heap_mt       1.96      21.96
+      daxpy_stack_mt       1.91      21.31
+        daxpy_vec_mt       1.98      22.09
+vector size overriden to 4096
+# vector size 4096 (6.10352e-05 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       6.42      71.74
+         daxpy_stack       6.75      75.49
+           daxpy_vec       6.41      71.64
+           daxpy_mkl       3.05      34.13
+       daxpy_heap_mt       3.91      43.75
+      daxpy_stack_mt       3.54      39.59
+        daxpy_vec_mt       3.86      43.12
+vector size overriden to 8192
+# vector size 8192 (0.00012207 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       6.41      71.62
+         daxpy_stack       7.08      79.09
+           daxpy_vec       6.31      70.50
+           daxpy_mkl       5.48      61.21
+       daxpy_heap_mt       7.41      82.83
+      daxpy_stack_mt       7.41      82.86
+        daxpy_vec_mt       7.21      80.58
+vector size overriden to 16384
+# vector size 16384 (0.000244141 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       5.74      64.11
+         daxpy_stack       7.07      79.05
+           daxpy_vec       5.75      64.22
+           daxpy_mkl       9.21     102.92
+       daxpy_heap_mt      14.09     157.42
+      daxpy_stack_mt      13.84     154.65
+        daxpy_vec_mt      14.16     158.20
+vector size overriden to 32768
+# vector size 32768 (0.000488281 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       5.73      64.07
+         daxpy_stack       6.95      77.66
+           daxpy_vec       5.73      64.03
+           daxpy_mkl      12.58     140.61
+       daxpy_heap_mt      19.89     222.27
+      daxpy_stack_mt      19.94     222.81
+        daxpy_vec_mt      19.91     222.53
+vector size overriden to 65536
+# vector size 65536 (0.000976562 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       4.98      55.63
+         daxpy_stack       4.89      54.70
+           daxpy_vec       4.96      55.48
+           daxpy_mkl      21.75     243.05
+       daxpy_heap_mt      31.46     351.55
+      daxpy_stack_mt      31.39     350.80
+        daxpy_vec_mt      31.87     356.12
+vector size overriden to 131072
+# vector size 131072 (0.00195312 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       3.03      33.84
+         daxpy_stack       3.07      34.28
+           daxpy_vec       3.03      33.82
+           daxpy_mkl      31.67     353.93
+       daxpy_heap_mt      42.85     478.93
+      daxpy_stack_mt      42.77     477.99
+        daxpy_vec_mt      43.60     487.26
+vector size overriden to 262144
+# vector size 262144 (0.00390625 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       3.00      33.56
+         daxpy_stack       3.07      34.36
+           daxpy_vec       3.01      33.59
+           daxpy_mkl      42.06     470.02
+       daxpy_heap_mt      53.11     593.56
+      daxpy_stack_mt      52.33     584.87
+        daxpy_vec_mt      53.46     597.43
+vector size overriden to 524288
+# vector size 524288 (0.0078125 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       2.91      32.50
+         daxpy_stack       2.86      31.98
+           daxpy_vec       2.82      31.52
+           daxpy_mkl      48.02     536.63
+       daxpy_heap_mt      58.83     657.44
+      daxpy_stack_mt      59.13     660.81
+        daxpy_vec_mt      58.87     657.89
+vector size overriden to 1048576
+# vector size 1048576 (0.015625 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       2.29      25.63
+         daxpy_stack       2.40      26.83
+           daxpy_vec       2.24      25.06
+           daxpy_mkl      17.07     190.75
+       daxpy_heap_mt      18.21     203.51
+      daxpy_stack_mt      20.34     227.36
+        daxpy_vec_mt      18.19     203.26
+vector size overriden to 2097152
+# vector size 2097152 (0.03125 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       1.84      20.57
+         daxpy_stack       1.67      18.69
+           daxpy_vec       1.79      20.00
+           daxpy_mkl      11.58     129.43
+       daxpy_heap_mt      12.15     135.84
+      daxpy_stack_mt      12.77     142.76
+        daxpy_vec_mt      12.19     136.18
+vector size overriden to 4194304
+# vector size 4194304 (0.0625 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       1.64      18.33
+         daxpy_stack       1.56      17.43
+           daxpy_vec       1.61      18.00
+           daxpy_mkl       7.89      88.17
+       daxpy_heap_mt       8.14      90.94
+      daxpy_stack_mt       8.05      89.95
+        daxpy_vec_mt       8.26      92.28
+vector size overriden to 8388608
+# vector size 8388608 (0.125 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       1.54      17.20
+         daxpy_stack       1.49      16.70
+           daxpy_vec       1.51      16.93
+           daxpy_mkl       7.36      82.23
+       daxpy_heap_mt       7.49      83.67
+      daxpy_stack_mt       6.94      77.57
+        daxpy_vec_mt       7.47      83.51
+vector size overriden to 16777216
+# vector size 16777216 (0.25 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       1.48      16.50
+         daxpy_stack       1.48      16.58
+           daxpy_vec       1.47      16.41
+           daxpy_mkl       6.87      76.80
+       daxpy_heap_mt       7.00      78.23
+      daxpy_stack_mt       6.93      77.42
+        daxpy_vec_mt       6.98      77.98
+vector size overriden to 33554432
+# vector size 33554432 (0.5 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       1.46      16.32
+         daxpy_stack       1.46      16.35
+           daxpy_vec       1.46      16.28
+           daxpy_mkl       6.81      76.06
+       daxpy_heap_mt       6.93      77.49
+      daxpy_stack_mt       6.96      77.79
+        daxpy_vec_mt       6.93      77.45
+vector size overriden to 67108864
+# vector size 67108864 (1 GB)
+# columns: routine | GFlop/s | GB/s
+          daxpy_heap       1.46      16.30
+         daxpy_stack       1.46      16.34
+           daxpy_vec       1.46      16.28
+           daxpy_mkl       6.76      75.50
+       daxpy_heap_mt       6.87      76.82
+      daxpy_stack_mt       6.83      76.38
+        daxpy_vec_mt       6.88      76.86
