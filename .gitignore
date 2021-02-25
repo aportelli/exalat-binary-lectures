@@ -5,6 +5,7 @@ a.out
 *.so
 core
 vgcore.*
+*.out
 1-x86_64/hello
 1-x86_64/hello-asm
 1-x86_64/hello-shellcode
@@ -18,3 +19,6 @@ vgcore.*
 3-debug-profile/leak
 3-debug-profile/overflow
 3-debug-profile/signal
+3-debug-profile/daxpy
+3-debug-profile/dgemm
+4-hack/secret
