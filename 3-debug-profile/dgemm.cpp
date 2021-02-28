@@ -115,13 +115,13 @@ int main(int argc, char *argv[])
         bar[i] = b[i];
 #endif
     }
-    // BENCHMARK("dgemm_heap", 3, dgemm_ptr(c.data(), a.data(), b.data(), n));
+    BENCHMARK("dgemm_heap", 3, dgemm_ptr(c.data(), a.data(), b.data(), n));
     BENCHMARK("dgemm_heap_mt", 3, dgemm_ptr_thread(c.data(), a.data(), b.data(), n));
 #ifdef NARRAY
-    // BENCHMARK("dgemm_stack", 3, dgemm_ptr(car, aar, bar, n));
-    // BENCHMARK("dgemm_stack_mt", 3, dgemm_ptr_thread(car, aar, bar, n));
+    BENCHMARK("dgemm_stack", 3, dgemm_ptr(car, aar, bar, n));
+    BENCHMARK("dgemm_stack_mt", 3, dgemm_ptr_thread(car, aar, bar, n));
 #endif
-    // BENCHMARK("dgemm_mkl", 3, dgemm_mkl(c.data(), a.data(), b.data(), n));
+    BENCHMARK("dgemm_mkl", 3, dgemm_mkl(c.data(), a.data(), b.data(), n));
     
     return EXIT_SUCCESS;
 }
