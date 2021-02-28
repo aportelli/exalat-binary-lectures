@@ -61,11 +61,11 @@ functions`function2:
 (lldb) p/a 0x000000000040116c # you can get the position with the 'a' type too
 (int) $1 = 0x0040116c functions`function2 + 28 at functions.c:14:19
 (lldb) x/4xg `$rsp + 0x10` # now let's look at the stack frame under it
-0x7fffffffdec0: 0x00007ffff7fb0fc8 0x4000000000000000 # 16B of stack space
-0x7fffffffded0: 0x00007fffffffdef0 0x00000000004011ac # saved pointer and return address of function1
-(lldb) x/f `$rsp + 0x10` # first function1 stack element
+0x7fffffffdec0: 0x00007ffff7fb0fc8 0x4000000000000000 # 16B of stack space (cf. ASM above)
+0x7fffffffded0: 0x00007fffffffdef0 0x00000000004011ac # saved pointer and return address of function2
+(lldb) x/f `$rsp + 0x10` # first function2 stack element
 0x7fffffffdec0: 6.953349160608217E-310 # garbage, temporary
-(lldb) x/f `$rsp + 0x18` # second function1 stack element
+(lldb) x/f `$rsp + 0x18` # second function2 stack element
 0x7fffffffdec8: 2 # this is the function argument!
 (lldb) p/a 0x00000000004011ac # the return address is the call from main
 (int) $23 = 0x004011ac functions`main + 28 at functions.c:21:3
