@@ -22,3 +22,4 @@ vgcore.*
 3-debug-profile/daxpy
 3-debug-profile/dgemm
 4-hack/secret
+4-hack/**/callfunc
