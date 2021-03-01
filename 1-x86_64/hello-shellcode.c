@@ -7,8 +7,6 @@ const unsigned char code [] =
   "\x00\x00\x00\x0f\x05\xb8\x3c\x00\x00\x00\x31\xff\x0f\x05\xe8"
   "\xe0\xff\xff\xff\x48\x65\x6c\x6c\x6f\x20\x77\x6f\x72\x6c\x64\x0a";
 
-const unsigned char str [] = "Whisky";
-
 int main(int argc, char **argv)
 {
   // It used to be easier to break computers...

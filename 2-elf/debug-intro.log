@@ -67,7 +67,7 @@ hello`main:
     0x401157 <+39>: add    rsp, 0x10
     0x40115b <+43>: pop    rbp
     0x40115c <+44>: ret    
-(lldb) re r rip # read rip (this is the next inatruction)
+(lldb) re r rip # read rip (this is the next instruction)
      rip = 0x000000000040113f  hello`main + 15 at hello.c:6:3
 (lldb) si # step by one instruction
 Process 62481 stopped
